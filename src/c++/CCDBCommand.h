@@ -1,0 +1,4 @@
+namespace cloudclient {
+	class CCDBCommand {
+	};
+}
