@@ -29,7 +29,7 @@ class Storage(CCPlugin):
 			return "OK"
 		elif self._request.args['a'] == 'get':
 			if not key in self.db:
-				return "OK"
+				return "OK UNKNOWN"
 			return "OK " + self.db[key]
 			# Keeping it here for possible testing
 			#output = ''
