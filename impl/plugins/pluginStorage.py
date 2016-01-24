@@ -28,5 +28,4 @@ class Storage(CCPlugin):
 		CCPlugin.__init__(self)
 		self._path = "/storage"
 		self.db = shelve.open("storage.db.shelve", writeback=True)
-		print self.db.keys()
 

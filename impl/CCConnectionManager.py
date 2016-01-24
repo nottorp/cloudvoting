@@ -27,10 +27,6 @@ class CCConnectionManager(object):
 		"""@ReturnType cloudclient.CCConnectionManager"""
 		pass
 
-
-	def index(self):
-		return `self.paths`
-
 	def __init__(self, app):
 		self.___queue = None
 		self.___connection = None
@@ -43,16 +39,13 @@ class CCConnectionManager(object):
 		self.___pluginManager.load()
 
 		pl = self.___pluginManager.getPlugins()
-		self.paths = []
 		for p in pl:
 			pluginInstance = p.get("instance")
 			pluginInstancePath = pluginInstance.getPath()
 			if pluginInstance is not None and pluginInstancePath is not None:
-				self.paths.append(pluginInstancePath)
-				print("Plugin: %s REST Path: %s" % (p["name"], pluginInstancePath))
 				self.___app.add_url_rule(pluginInstancePath, pluginInstancePath, pluginInstance.perform)
 
-		self.___app.add_url_rule('/', 'index', self.index)
+		self.___app.add_url_rule('/', 'index', self._index)
 		self.___app.add_url_rule('/shutdown', 'shutdown', self.shutdown)
 
 		self.___instance = None
@@ -69,6 +62,20 @@ class CCConnectionManager(object):
 		if func is None:
 			raise RuntimeError('Not running with the Werkzeug Server')
 		func()
+
+
+	def _index(self):
+		pl = self.___pluginManager.getPlugins()
+		output = "Plugin Name\t\t\t REST Path<br>"
+		output += "-----------------------------<br>"
+		for p in pl:
+			pluginInstance = p.get("instance")
+			pluginInstancePath = pluginInstance.getPath()
+			if pluginInstance is not None and pluginInstancePath is not None:
+				output += p["name"] + " : " + pluginInstancePath + "<br>"
+
+		return output
+
 
 if __name__ == "__main__":
 	app = Flask(__name__)
