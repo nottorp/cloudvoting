@@ -18,20 +18,25 @@ class CCPluginManager(object):
 			except Exception as e:
 				# If I can't import it, i'm not interested in it
 				print e
-				pass
+				continue
+			plugin_name = modname[6:]
 			plugin_class_name = getattr(mod, "className")
 			plugin_class = getattr(mod, plugin_name)
-				
-		pass
+			self.___pluginList.append({"name": plugin_class_name, "class": plugin_class, "instance": None})
 
 	def load(self):
-		pass
+		for p in self.___pluginList:
+			p["instance"] = p["class"]()
 
 	def run(self):
 		pass
 
-	def registerPlugin(self):
-		pass
+	def registerPlugin(self, pluginName):
+		for p in self.___pluginList:
+			if p["name"] == pluginName:
+				return p["class"]()
+
+		return None
 
 	def dispatch(self):
 		pass
@@ -42,6 +47,13 @@ class CCPluginManager(object):
 	def operation(self):
 		pass
 
+	def listPlugins(self):
+		for p in self.___pluginList:
+			print(p)
+
+	def getPlugins(self):
+		return self.___pluginList
+
 	def __init__(self):
 		self.___pluginList = []
 		self.___resultsQueue = None
@@ -50,8 +62,18 @@ class CCPluginManager(object):
 		# @AssociationType cloudclient.CCPlugin
 		# @AssociationKind Aggregation
 
-sys.path.append('.')
 
-pm = CCPluginManager()
+# UNIT Test
+if __name__ == "__main__":
+	PLUGIN_DIR = './plugins'
+	sys.path.append(PLUGIN_DIR)
 
-pm.locate('.')
+	pm = CCPluginManager()
+
+	pm.locate(PLUGIN_DIR)
+	pm.listPlugins()
+	pm.load()
+	pm.listPlugins()
+	storagePlugin = pm.registerPlugin("Storage")
+	print(storagePlugin.getPath())
+

@@ -10,6 +10,9 @@ class CCPlugin(object):
 	def perform(self):
 		pass
 
+	def getPath(self):
+		return self._path
+
 	#@abstractmethod
 	def __init__(self):
 		self._path = None

@@ -7,10 +7,10 @@ className = "TestPlugin"
 
 class TestPlugin(CCPlugin):
 	def perform(self):
-		pass
+		return "Test Plugin: perform()"
 
 	def __init__(self):
-		self._path = None
+		self._path = "/test"
 		self._request = None
 		"""@AttributeType cloudclient.CCResponse"""
 
