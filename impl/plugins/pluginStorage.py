@@ -31,6 +31,11 @@ class Storage(CCPlugin):
 			if not key in self.db:
 				return "OK UNKNOWN"
 			return "OK " + self.db[key]
+		elif self._request.args['a'] == 'getall':
+			out = ''
+			for k in self.db.keys():
+				out += k + ":" + self.db[k] + "|"
+			return out
 			# Keeping it here for possible testing
 			#output = ''
 			#for k in self.db.keys():
