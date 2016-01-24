@@ -7,16 +7,13 @@ from multiprocessing import Process
 
 import sys, signal
 from flask import Flask
+from flask import request
 
 PLUGIN_DIR = './plugins'
 sys.path.append(PLUGIN_DIR)
 
 class CCConnectionManager(object):
 	def run(self):
-		self.___server = Process(target=self._run)
-		self.___server.start()
-
-	def _run(self):
 		self.___app.debug = True
 		self.___app.run(port=9000)
 
@@ -56,19 +53,22 @@ class CCConnectionManager(object):
 				self.___app.add_url_rule(pluginInstancePath, pluginInstancePath, pluginInstance.perform)
 
 		self.___app.add_url_rule('/', 'index', self.index)
-
+		self.___app.add_url_rule('/shutdown', 'shutdown', self.shutdown)
 
 		self.___instance = None
 
 	def shutdown(self):
 		print "Shutting down"
 		self.___pluginManager.shutdown()
-		self._shutdown()
+		self._shutdown_app()
+		return "Shutting down"
 
-	def _shutdown(self):
-		self.___server.terminate()
-		self.___server.join()
 
+	def _shutdown_app(self):
+		func = request.environ.get('werkzeug.server.shutdown')
+		if func is None:
+			raise RuntimeError('Not running with the Werkzeug Server')
+		func()
 
 if __name__ == "__main__":
 	app = Flask(__name__)

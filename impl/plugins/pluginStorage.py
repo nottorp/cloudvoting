@@ -2,28 +2,31 @@
 # -*- coding: UTF-8 -*-
 
 from CCPlugin import CCPlugin
-import pickledb
 import time
+import shelve
 
 
 className = "Storage"
 
 class Storage(CCPlugin):
 	def perform(self):
-		now = int(time.time())
-		self.db.set(now, 'perform()')
-		keys = self.db.getall()
+		now = str(int(time.time()))
+		self.db[now] = " storage perform()"
+		keys = self.db.keys()
 		output = ""
 		for k in keys:
-			output += "@" + str(k) + " : " + self.db.get(k) + "<br>"
+			output += "@" + k + " : " + str(self.db[k]) + "<br>"
 
 		return output
 
 	def shutdown(self):
-		self.db.dump()
+		print "Storage: shutdown()"
+		self.db.sync()
+		self.db.close()
 
 	def __init__(self):
 		CCPlugin.__init__(self)
 		self._path = "/storage"
-		self.db = pickledb.load('storage.db', False)
+		self.db = shelve.open("storage.db.shelve", writeback=True)
+		print self.db.keys()
 
