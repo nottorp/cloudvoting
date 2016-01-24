@@ -5,6 +5,10 @@ from CCPlugin import CCPlugin
 import time
 import shelve
 
+# Expecting:
+# ?a=set&k=key&v=value
+# ?a=get&k=key
+# ?a=getall&k=dummy (key will be ignored)
 
 className = "Storage"
 
