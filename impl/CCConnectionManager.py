@@ -8,14 +8,18 @@ from multiprocessing import Process
 import sys, signal
 from flask import Flask
 from flask import request
+import json
 
 PLUGIN_DIR = './plugins'
+APP_PORT = 9000
 sys.path.append(PLUGIN_DIR)
+
+app = Flask(__name__)
 
 class CCConnectionManager(object):
 	def run(self):
 		self.___app.debug = True
-		self.___app.run(port=9000)
+		self.___app.run(port=APP_PORT, threaded=True)
 
 	def stop(self):
 		pass
@@ -66,19 +70,17 @@ class CCConnectionManager(object):
 
 	def _index(self):
 		pl = self.___pluginManager.getPlugins()
-		output = "Plugin Name\t\t\t REST Path<br>"
-		output += "-----------------------------<br>"
+		availablePlugins = []
+
 		for p in pl:
 			pluginInstance = p.get("instance")
 			pluginInstancePath = pluginInstance.getPath()
-			if pluginInstance is not None and pluginInstancePath is not None:
-				output += p["name"] + " : " + pluginInstancePath + "<br>"
+			availablePlugins.append({"name": p["name"], "path": pluginInstancePath})
 
-		return output
+		return json.dumps(availablePlugins)
 
 
 if __name__ == "__main__":
-	app = Flask(__name__)
 	cm = CCConnectionManager(app)
 	cm.run()
 
