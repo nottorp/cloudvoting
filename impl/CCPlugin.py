@@ -3,12 +3,14 @@
 #from abc import ABCMeta, abstractmethod
 #import CCResponse
 
+from flask import request
+
 class CCPlugin(object):
-	#"""@Interface"""
-	#__metaclass__ = ABCMeta
-	#@abstractmethod
 	def perform(self):
-		pass
+		print("Path: %s doesn't implement perform() method !" % self._path)
+
+	def shutdown(self):
+		print("Path: %s doesn't implement shutdown() method !" % self._path)
 
 	def getPath(self):
 		return self._path
@@ -16,6 +18,5 @@ class CCPlugin(object):
 	#@abstractmethod
 	def __init__(self):
 		self._path = None
-		self._request = None
-		"""@AttributeType cloudclient.CCResponse"""
+		self._request = request
 

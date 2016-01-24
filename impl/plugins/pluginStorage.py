@@ -19,9 +19,11 @@ class Storage(CCPlugin):
 
 		return output
 
+	def shutdown(self):
+		self.db.dump()
+
 	def __init__(self):
+		CCPlugin.__init__(self)
 		self._path = "/storage"
-		self._request = None
 		self.db = pickledb.load('storage.db', False)
-		"""@AttributeType cloudclient.CCResponse"""
 

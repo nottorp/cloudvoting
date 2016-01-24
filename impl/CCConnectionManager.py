@@ -3,17 +3,22 @@
 import CCConnectionQueue
 import CCConnection
 from CCPluginManager import CCPluginManager
+from multiprocessing import Process
 
-import sys
+import sys, signal
 from flask import Flask
-app = Flask(__name__)
 
 PLUGIN_DIR = './plugins'
 sys.path.append(PLUGIN_DIR)
 
 class CCConnectionManager(object):
 	def run(self):
-		pass
+		self.___server = Process(target=self._run)
+		self.___server.start()
+
+	def _run(self):
+		self.___app.debug = True
+		self.___app.run(port=9000)
 
 	def stop(self):
 		pass
@@ -29,13 +34,17 @@ class CCConnectionManager(object):
 	def index(self):
 		return `self.paths`
 
-	def __init__(self):
+	def __init__(self, app):
 		self.___queue = None
-		"""@AttributeType cloudclient.CCConnectionQueue"""
 		self.___connection = None
+		self.___app = app
+		self.___server = None
+
+
 		self.___pluginManager = CCPluginManager()
 		self.___pluginManager.locate(PLUGIN_DIR)
 		self.___pluginManager.load()
+
 		pl = self.___pluginManager.getPlugins()
 		self.paths = []
 		for p in pl:
@@ -44,22 +53,35 @@ class CCConnectionManager(object):
 			if pluginInstance is not None and pluginInstancePath is not None:
 				self.paths.append(pluginInstancePath)
 				print("Plugin: %s REST Path: %s" % (p["name"], pluginInstancePath))
-				app.add_url_rule(pluginInstancePath, pluginInstancePath, pluginInstance.perform)
+				self.___app.add_url_rule(pluginInstancePath, pluginInstancePath, pluginInstance.perform)
 
-		app.add_url_rule('/', 'index', self.index)
+		self.___app.add_url_rule('/', 'index', self.index)
 
-		"""@AttributeType cloudclient.CCPluginManager"""
+
 		self.___instance = None
-		self._unnamed_CCConnectionQueue_ = None
-		# @AssociationType cloudclient.CCConnectionQueue
-		# @AssociationKind Aggregation
-		self._unnamed_CCConnection_ = None
-		# @AssociationType cloudclient.CCConnection
-		# @AssociationKind Aggregation
+
+	def shutdown(self):
+		print "Shutting down"
+		self.___pluginManager.shutdown()
+		self._shutdown()
+
+	def _shutdown(self):
+		self.___server.terminate()
+		self.___server.join()
+
 
 if __name__ == "__main__":
-	cm = CCConnectionManager()
-	app.debug = True
-	app.run(port=9000)
+	app = Flask(__name__)
+	cm = CCConnectionManager(app)
+	cm.run()
+
+	def signalHandler(signal, frame):
+		cm.shutdown()
+
+	signal.signal(signal.SIGINT, signalHandler)
+
+
+
+
 
 

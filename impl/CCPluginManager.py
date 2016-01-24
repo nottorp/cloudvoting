@@ -54,6 +54,12 @@ class CCPluginManager(object):
 	def getPlugins(self):
 		return self.___pluginList
 
+	def shutdown(self):
+		for p in self.___pluginList:
+			i = p.get("instance")
+			if i is not None:
+				i.shutdown()
+
 	def __init__(self):
 		self.___pluginList = []
 		self.___resultsQueue = None
